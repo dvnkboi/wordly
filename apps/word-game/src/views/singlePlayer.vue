@@ -1,0 +1,191 @@
+<template>
+  <bigPrompt
+    @replay="startGame"
+    class="absolute z-50"
+    :shown="showPrompt"
+    :message="gameEndMsg"
+    :replayPrompt="true"
+  />
+  <div
+    class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0"
+    data-test="singlePlayer"
+  >
+    <transition name="fade-left" appear>
+      <div
+        class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+      >
+        <UserScore :users="users" />
+      </div>
+    </transition>
+    <transition name="fade-down" appear>
+      <div
+        class="w-7/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+      >
+        <Game
+          @guessedWord="handleGuess"
+          :word="word"
+          :lettersLeft="lettersLeft"
+          :round="round"
+          id="gameContainer"
+          :gameTimeStamp="gameTimeStamp"
+        />
+      </div>
+    </transition>
+
+    <transition name="fade-right" appear>
+      <div
+        class="w-3/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+      >
+        <Chat
+          :users="users"
+          :guessText="guessText"
+          :playingUser="playingUser"
+          id="chatContainer"
+          :sp="true"
+        />
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script>
+import Chat from '../components/chat.vue'
+import Game from '../components/game.vue'
+import UserScore from '../components/userScore.vue';
+import BigPrompt from '../components/bigPrompt.vue';
+import { map, wait, getWordArray, words } from 'shared';
+import { v4 as uuidv4 } from 'uuid';
+
+export default {
+  data() {
+    return {
+      round: 0,
+      showPrompt: false,
+      gameEndMsg: '',
+      playingUser: {
+        id: uuidv4(),
+      },
+      gameTimeStamp: Date.now(),
+      users: {
+        '0': {
+          name: 'Guess Bot',
+          lives: Infinity,
+          score: Infinity,
+          img: 'https://i.pravatar.cc/300?img=1',
+        }
+      },
+      word: [],
+      letterCount: 0,
+      lettersLeft: 0,
+      guessText: {
+        msg: '',
+        timeStamp: new Date()
+      },
+      guessLock: false,
+    }
+  },
+  methods: {
+    async handleGuess(letter, correct) {
+      if (this.guessLock) return;
+      this.guessLock = true;
+      if (this.lettersLeft > 0) {
+
+        await wait(50);
+
+        this.botSpeak(`${this.users[this.playingUser.id].name} guessed ${letter}`);
+
+        await wait(500 + Math.random() * 1000);
+
+        if (correct) {
+          this.handleCorrectGuess(letter);
+
+          //check if letter in word and display guess text
+          this.botSpeak(`${letter} is in the word! ${this.users[this.playingUser.id].name} scores some points`);
+
+          await wait(300);
+
+          if (this.lettersLeft <= 0) {
+            this.gameEndMsg = 'You Win!';
+            this.showPrompt = true;
+            await this.$lf.setItem('currentRound', this.round);
+          }
+        }
+        else {
+          this.users[this.playingUser.id].lives--;
+          this.botSpeak(`${letter} is not in the word! :c ${this.users[this.playingUser.id].name} loses a life`);
+        }
+        if (this.users[this.playingUser.id].lives <= 0) {
+          this.gameEndMsg = 'You Lost :c womp wooomp';
+          this.showPrompt = true;
+          await this.$lf.setItem('currentRound', this.round);
+        }
+      }
+      await this.$lf.setItem('spUser', JSON.stringify(this.users[this.playingUser.id]));
+      this.guessLock = false;
+    },
+    handleCorrectGuess(inputLetter) {
+      this.word.map(letter => {
+        if (letter.ltr.toLowerCase() == inputLetter.toLowerCase()) {
+          letter.isGuessed = true;
+          this.users[this.playingUser.id].score += Math.ceil(map(this.lettersLeft, this.letterCount, 0, 20, 0));
+          this.lettersLeft--;
+        }
+      });
+    },
+    async startGame() {
+
+      this.gameTimeStamp = Date.now();
+      this.showPrompt = false;
+      this.round++;
+      this.users[this.playingUser.id].lives = 3;
+      this.word = getWordArray(words[Math.floor(Math.random() * words.length)]);
+      this.word.forEach(letter => {
+        if (letter.ltr != ' ') this.letterCount++;
+        if (!letter.isGuessed) {
+          this.lettersLeft++;
+        }
+      });
+    },
+    botSpeak(msg) {
+      this.guessText = {
+        msg: msg,
+        timeStamp: new Date()
+      }
+    }
+  },
+  async mounted() {
+
+    this.users[this.playingUser.id] = JSON.parse(await this.$lf.getItem('spUser'));
+
+    if (this.users[this.playingUser.id] == null) {
+      this.users[this.playingUser.id] = {
+        name: 'User 1',
+        lives: 3,
+        score: 0,
+        img: 'https://i.pravatar.cc/300?img=1',
+      }
+    }
+
+    //get random word
+    this.round = await this.$lf.getItem('currentRound');
+
+    await this.startGame();
+
+    await wait(2000);
+
+    //check if letter in word and display guess text
+    this.botSpeak(`Welcome to the game! ${this.users[this.playingUser.id].name} starts the game`);
+
+    await wait(500);
+
+    this.botSpeak(`the word you have to guess has ${this.lettersLeft} letters`);
+
+  },
+  components: {
+    Chat,
+    Game,
+    UserScore,
+    BigPrompt
+  }
+}
+</script>
