@@ -5684,11 +5684,6 @@ util-deprecate@^1.0.2:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
-util-lib@*:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/util-lib/-/util-lib-1.0.4.tgz#f3da6fdf4a80177f95f3fb811af5dfd9b552ac71"
-  integrity sha1-89pv30qAF3+V8/uBGvXf2bVSrHE=
-
 utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
