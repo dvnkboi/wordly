@@ -7,4 +7,4 @@ const app = createApp(App);
 
 app.config.globalProperties.$lf = localforage;
 
-app.use(Router).mount('#app')
+app.use(Router).mount('#app');

@@ -1,4 +1,4 @@
-# Wordly
+# Wordly game
 
 A small word game project that emphasises the proper way to structure, test, and deploy a project containing multiple end-points and dependencies
 
