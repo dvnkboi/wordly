@@ -1,4 +1,2 @@
-declare const express: any;
-declare const app: any;
-declare const port = 3002;
+export {};
 //# sourceMappingURL=index.d.ts.map
