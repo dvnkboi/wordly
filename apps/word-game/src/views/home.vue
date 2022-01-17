@@ -9,12 +9,12 @@
       <div class="flex justify-center items-center flex-row gap-16">
         <router-link to="/singlePlayer">
           <h1 class="bg-slate-100 rounded-2xl px-3 py-2 shadow-xl">
-            <span class="text-2xl font-bold italic">Single Player</span>
+            <span class="text-2xl font-bold italic">SinglePlayer</span>
           </h1>
         </router-link>
         <router-link to="/multiPlayer">
           <h1 class="bg-slate-100 rounded-2xl px-3 py-2 shadow-xl">
-            <span class="text-2xl font-bold italic">Single Player</span>
+            <span class="text-2xl font-bold italic">MultiPlayer (WIP)</span>
           </h1>
         </router-link>
       </div>
