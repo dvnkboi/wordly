@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import SinglePlayer from "../views/SinglePlayer.vue";
-import MultiPlayer from "../views/MultiPlayer.vue";
-import Home from "../views/Home.vue";
+import SinglePlayer from "../views/SinglePlayerPage.vue";
+import MultiPlayer from "../views/MultiPlayerPage.vue";
+import Home from "../views/HomePage.vue";
 
 const routes = [
   {
