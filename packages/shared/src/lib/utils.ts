@@ -4,7 +4,7 @@ interface Word {
 }
 
 export function map(x: number, in_min: number, in_max: number, out_min: number, out_max: number): number {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    return Math.max(Math.min((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min, out_max), out_min);
 }
 
 export function wait(ms: number): Promise<void> {
