@@ -1,12 +1,13 @@
 {
   "name": "socketserver",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "./src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "shared": "*",
     "@types/node": "^17.0.8",
     "express": "^4.17.2",
+    "shared": "*",
+    "socket.io": "^4.4.1",
     "typescript": "^4.5.4"
   },
   "devDependencies": {
@@ -14,6 +15,6 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev": "tsc -p tsconfig.json && ts-node index.ts"
+    "dev": "tsc -p tsconfig.json && ts-node ./src/index.ts"
   }
 }

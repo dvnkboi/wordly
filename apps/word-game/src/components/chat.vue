@@ -11,6 +11,7 @@
           v-for="message in messages"
           :message="message.message"
           :user="users[message.userId]"
+          :loading="message.loading"
         />
       </transition-group>
     </div>
@@ -21,6 +22,7 @@
 <script>
 import bubble from './bubble.vue'
 import chatBox from './chatBox.vue'
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   data() {
@@ -34,21 +36,20 @@ export default {
   },
   methods: {
     handleMsg(msg) {
-      this.messages.push({
-        userId: this.playingUser.id,
+      this.$emit('msgSend', {
+        userId: this.playingUser,
         message: msg
       });
-      this.$nextTick(() => {
-        this.$refs.scrollChat.scrollTop = this.$refs.scrollChat.scrollHeight;
-      });
+      this.$refs.scrollChat.scrollTop = this.$refs.scrollChat.scrollHeight;
     }
   },
   watch: {
-    guessText: {
-      handler: function (guessText) {
+    chatMsgToPush: {
+      handler: function (chatMsgToPush, loading) {
         this.messages.push({
-          userId: '0',
-          message: guessText.msg
+          userId: chatMsgToPush.userId,
+          message: chatMsgToPush.message,
+          loading: loading ?? false,
         });
         this.$nextTick(() => {
           this.$refs.scrollChat.scrollTop = this.$refs.scrollChat.scrollHeight;
@@ -57,7 +58,7 @@ export default {
       deep: true
     }
   },
-  props: ['users', 'guessText', 'playingUser', 'sp']
+  props: ['users', 'chatMsgToPush', 'playingUser', 'sp']
 }
 </script>
 

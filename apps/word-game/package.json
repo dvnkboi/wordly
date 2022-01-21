@@ -8,13 +8,15 @@
     "test": "jest"
   },
   "dependencies": {
-    "config": "*",
-    "shared": "*",
     "@tailwindcss/forms": "^0.4.0",
+    "config": "*",
     "localforage": "^1.10.0",
+    "shared": "*",
+    "socket.io-client": "^4.4.1",
     "uuid": "^8.3.2",
     "vue": "^3.2.25",
-    "vue-router": "4"
+    "vue-router": "4",
+    "socketserver": "*"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.16.7",

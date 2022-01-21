@@ -38,7 +38,7 @@
       >
         <Chat
           :users="users"
-          :guessText="guessText"
+          :chatMsgToPush="chatMsgToPush"
           :playingUser="playingUser"
           id="chatContainer"
           :sp="true"
@@ -77,7 +77,7 @@ export default {
       word: [],
       letterCount: 0,
       lettersLeft: 0,
-      guessText: {
+      chatMsgToPush: {
         msg: '',
         timeStamp: new Date()
       },
@@ -147,8 +147,9 @@ export default {
       });
     },
     botSpeak(msg) {
-      this.guessText = {
-        msg: msg,
+      this.chatMsgToPush = {
+        userId: '0',
+        message: msg,
         timeStamp: new Date()
       }
     }
