@@ -28,6 +28,7 @@
           :round="round"
           id="gameContainer"
           :gameTimeStamp="gameTimeStamp"
+          :alreadyGuessedPush="alreadyGuessed"
         />
       </div>
     </transition>
@@ -62,19 +63,16 @@ export default {
   data() {
     return {
       round: 0,
+      deadLock: false,
+      playerName: '',
+      roomId: '',
       socket: null,
       showPrompt: false,
       gameEndMsg: '',
       playingUser: null,
       gameTimeStamp: Date.now(),
-      users: {
-        '0': {
-          name: 'Guess Bot',
-          lives: Infinity,
-          score: Infinity,
-          img: 'https://i.pravatar.cc/300?img=10',
-        }
-      },
+      alreadyGuessed: [],
+      users: {},
       word: [],
       letterCount: 0,
       lettersLeft: 0,
@@ -103,36 +101,42 @@ export default {
     },
     botSpeak(msg) {
       this.chatMsgToPush = {
-        msg: msg,
+        userId: 0,
+        message: msg,
         timeStamp: new Date()
       }
     },
     connectSocket() {
       this.socket = io('ws://localhost:3001');
 
+      this.playerName = this.$route.params.playerName;
+      this.roomId = this.$route.params.roomId;
       this.socket.on('connect', () => {
 
         this.playingUser = this.socket.id;
 
         this.users[this.playingUser.id] = {
           id: this.playingUser,
-          name: 'Player ' + Object.keys(this.users).length,
-          lives: 3,
+          name: this.playerName,
+          lives: 10,
           score: 0,
           img: `https://i.pravatar.cc/300?img=${Math.floor(Math.random() * 10)}`
         }
 
         console.log('connected');
 
-        this.socket.emit('join', this.users[this.playingUser.id], 'room1');
+        this.socket.emit('join', this.users[this.playingUser.id], this.roomId);
       });
 
       this.socket.on('bot', (msg) => {
         this.botSpeak(msg);
       });
 
-      this.socket.on('roomUsersState', (roomUsers) => {
+      this.socket.on('roomUsersState', (roomUsers, state) => {
         this.users = roomUsers;
+        this.readState(state);
+        if (this.users[this.playingUser].lives <= 0) this.deadLock = true;
+        else this.deadLock = false;
       })
 
       // this.socket.on('gameEnd', (msg) => {
@@ -152,10 +156,7 @@ export default {
 
       this.socket.on('startGame', (users, state) => {
         this.users = users;
-        this.round = state.round;
-        this.letterCount = state.letterCount;
-        this.lettersLeft = state.lettersLeft;
-        this.word = state.word;
+        this.readState(state)
         console.log('start game', state);
       });
 
@@ -164,11 +165,19 @@ export default {
       this.socket.emit('chatMsg', msg);
     },
     handleGuess(letter, correct) {
-      this.socket.emit('guess', {
-        letter,
-        correct
-      });
+      if (this.deadLock) return;
+      console.log('guess', letter, correct);
+      this.socket.emit('guessed', letter, correct);
     },
+    readState(state) {
+      if (!state) return;
+      this.round = state.round;
+      this.letterCount = state.letterCount;
+      this.lettersLeft = state.lettersLeft;
+      this.word = state.word;
+      this.alreadyGuessed = state.alreadyGuessed;
+      console.log(state.alreadyGuessed)
+    }
   },
   created() {
     window.addEventListener('beforeunload', () => {
@@ -188,6 +197,6 @@ export default {
     Game,
     UserScore,
     BigPrompt
-  }
+  },
 }
 </script>

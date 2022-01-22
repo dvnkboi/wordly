@@ -50,12 +50,19 @@ export default {
     'lettersLeft',
     'round',
     'gameTimeStamp',
+    'alreadyGuessedPush'
   ],
   watch: {
     gameTimeStamp: function (prevTs, newTs) {
       if (prevTs !== newTs) {
         this.alreadyGuessed = [];
       }
+    },
+    alreadyGuessedPush: {
+      handler: function (val) {
+        this.alreadyGuessed = val;
+      },
+      deep: true
     }
   }
 }

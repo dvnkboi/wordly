@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-start items-start flex-col gap-5 py-1">
+  <div class="flex justify-start items-start flex-col gap-5 py-1 overflow-auto h-full w-full">
     <h1 class="font-bold italic text-4xl px-4">Scoreboard</h1>
     <div
       v-if="sortedUsers != {}"

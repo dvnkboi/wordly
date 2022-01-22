@@ -45,11 +45,10 @@ export default {
   },
   watch: {
     chatMsgToPush: {
-      handler: function (chatMsgToPush, loading) {
+      handler: function (chatMsgToPush) {
         this.messages.push({
           userId: chatMsgToPush.userId,
           message: chatMsgToPush.message,
-          loading: loading ?? false,
         });
         this.$nextTick(() => {
           this.$refs.scrollChat.scrollTop = this.$refs.scrollChat.scrollHeight;

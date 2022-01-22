@@ -45,9 +45,9 @@ export default {
     user: {
       type: Object,
       default: {
-        name: 'Cat',
-        score: 0,
-        lives: 3,
+        name: 'Useless Bot',
+        score: Infinity,
+        lives: -1,
         img: 'https://thecatapi.com/api/images/get?format=src&type=jpg',
       },
     },

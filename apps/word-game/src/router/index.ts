@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import SinglePlayer from "../views/SinglePlayerPage.vue";
 import MultiPlayer from "../views/MultiPlayerPage.vue";
+import RoomCreation from '../views/RoomCreation.vue';
 import Home from "../views/HomePage.vue";
 
 const routes = [
@@ -10,9 +11,15 @@ const routes = [
     component: SinglePlayer,
   },
   {
-    path: "/multiplayer",
+    path: "/multiplayer/:roomId/:playerName",
     name: "multiplayer",
     component: MultiPlayer,
+
+  },
+  {
+    path: "/roomCreation",
+    name: "roomCreation",
+    component: RoomCreation,
   },
   {
     path: "/",
