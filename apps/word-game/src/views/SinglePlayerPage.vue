@@ -71,7 +71,7 @@ export default {
           name: 'Guess Bot',
           lives: Infinity,
           score: Infinity,
-          img: 'https://i.pravatar.cc/300?img=1',
+          img: 'https://i.pravatar.cc/300?img=10',
         }
       },
       word: [],
@@ -163,7 +163,7 @@ export default {
         name: 'User 1',
         lives: 3,
         score: 0,
-        img: 'https://i.pravatar.cc/300?img=1',
+        img: 'https://i.pravatar.cc/300?img=5',
       }
     }
 

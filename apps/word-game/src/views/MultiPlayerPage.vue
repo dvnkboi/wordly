@@ -72,7 +72,7 @@ export default {
           name: 'Guess Bot',
           lives: Infinity,
           score: Infinity,
-          img: 'https://i.pravatar.cc/300?img=1',
+          img: 'https://i.pravatar.cc/300?img=10',
         }
       },
       word: [],
@@ -132,18 +132,13 @@ export default {
       });
 
       this.socket.on('roomUsersState', (roomUsers) => {
-        console.log(roomUsers)
         this.users = roomUsers;
       })
 
-      this.socket.on('gameEnd', (msg) => {
-        this.gameEndMsg = msg;
-        this.showPrompt = true;
-      });
-
-      this.socket.on('userState', (user) => {
-        this.users[user.userId] = user;
-      });
+      // this.socket.on('gameEnd', (msg) => {
+      //   this.gameEndMsg = msg;
+      //   this.showPrompt = true;
+      // });
 
       this.socket.on('chatMsg', (msg) => {
 
@@ -155,13 +150,38 @@ export default {
         console.log(this.chatMsgToPush)
       });
 
+      this.socket.on('startGame', (users, state) => {
+        this.users = users;
+        this.round = state.round;
+        this.letterCount = state.letterCount;
+        this.lettersLeft = state.lettersLeft;
+        this.word = state.word;
+        console.log('start game', state);
+      });
+
     },
     sendMsg(msg) {
       this.socket.emit('chatMsg', msg);
-    }
+    },
+    handleGuess(letter, correct) {
+      this.socket.emit('guess', {
+        letter,
+        correct
+      });
+    },
+  },
+  created() {
+    window.addEventListener('beforeunload', () => {
+      // this.socket.emit('leave');
+      this.socket.close();
+    })
   },
   async mounted() {
     this.connectSocket();
+  },
+  beforeUnmount() {
+    // this.socket.emit('leave');
+    this.socket.close();
   },
   components: {
     Chat,
