@@ -11,7 +11,6 @@
           v-for="message in messages"
           :message="message.message"
           :user="users[message.userId]"
-          :loading="message.loading"
         />
       </transition-group>
     </div>
