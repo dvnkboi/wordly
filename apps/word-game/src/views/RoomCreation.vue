@@ -1,5 +1,7 @@
 <template>
-  <div class="w-full h-screen flex justify-center items-center p-10">
+  <div
+    class="w-full h-screen flex justify-center items-center p-10 transform transition duration-500 bg-gradient-to-br from-sky-400 to-blue-600"
+  >
     <div
       class="flex justify-center items-center px-28 py-14 flex-col gap-10 bg-slate-50 shadow-2xl rounded-3xl"
     >

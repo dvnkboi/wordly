@@ -7,7 +7,7 @@
     :replayPrompt="true"
   />
   <div
-    class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0"
+    class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0 bg-gradient-to-br from-sky-400 to-blue-600"
     data-test="singlePlayer"
   >
     <transition name="fade-left" appear>
@@ -28,6 +28,8 @@
           :round="round"
           id="gameContainer"
           :gameTimeStamp="gameTimeStamp"
+          :lives="this.users[this.playingUser.id]?.lives || null"
+          :guessLock="guessLock"
         />
       </div>
     </transition>
@@ -86,42 +88,49 @@ export default {
   },
   methods: {
     async handleGuess(letter, correct) {
-      if (this.guessLock) return;
-      this.guessLock = true;
-      if (this.lettersLeft > 0) {
+      if (this.guessLock) {
+        console.log('skipped')
+        return;
+      }
+      else {
+        console.log(this.guessLock);
+        this.guessLock = true;
+        if (this.lettersLeft > 0) {
 
-        await wait(50);
+          await wait(50);
 
-        this.botSpeak(`${this.users[this.playingUser.id].name} guessed ${letter}`);
+          this.botSpeak(`${this.users[this.playingUser.id].name} guessed ${letter}`);
 
-        await wait(500 + Math.random() * 1000);
+          await wait(500 + Math.random() * 1000);
 
-        if (correct) {
-          this.handleCorrectGuess(letter);
+          if (correct) {
+            this.handleCorrectGuess(letter);
 
-          //check if letter in word and display guess text
-          this.botSpeak(`${letter} is in the word! ${this.users[this.playingUser.id].name} scores some points`);
+            //check if letter in word and display guess text
+            this.botSpeak(`${letter} is in the word! ${this.users[this.playingUser.id].name} scores some points`);
 
-          await wait(300);
+            await wait(300);
 
-          if (this.lettersLeft <= 0) {
-            this.gameEndMsg = 'You Win!';
+            if (this.lettersLeft <= 0) {
+              this.gameEndMsg = 'You Win!';
+              this.showPrompt = true;
+              await this.$lf.setItem('currentRound', this.round);
+            }
+          }
+          else {
+            this.users[this.playingUser.id].lives--;
+            this.botSpeak(`${letter} is not in the word! :c ${this.users[this.playingUser.id].name} loses a life`);
+          }
+          if (this.users[this.playingUser.id].lives <= 0) {
+            this.gameEndMsg = 'You Lost :c womp wooomp';
             this.showPrompt = true;
             await this.$lf.setItem('currentRound', this.round);
           }
         }
-        else {
-          this.users[this.playingUser.id].lives--;
-          this.botSpeak(`${letter} is not in the word! :c ${this.users[this.playingUser.id].name} loses a life`);
-        }
-        if (this.users[this.playingUser.id].lives <= 0) {
-          this.gameEndMsg = 'You Lost :c womp wooomp';
-          this.showPrompt = true;
-          await this.$lf.setItem('currentRound', this.round);
-        }
+        await this.$lf.setItem('spUser', JSON.stringify(this.users[this.playingUser.id]));
+        this.guessLock = false;
       }
-      await this.$lf.setItem('spUser', JSON.stringify(this.users[this.playingUser.id]));
-      this.guessLock = false;
+
     },
     handleCorrectGuess(inputLetter) {
       this.word.map(letter => {
@@ -137,7 +146,7 @@ export default {
       this.gameTimeStamp = Date.now();
       this.showPrompt = false;
       this.round++;
-      this.users[this.playingUser.id].lives = 3;
+      this.users[this.playingUser.id].lives = 5;
       this.word = getWordArray(words[Math.floor(Math.random() * words.length)]);
       this.word.forEach(letter => {
         if (letter.ltr != ' ') this.letterCount++;
@@ -160,8 +169,8 @@ export default {
 
     if (this.users[this.playingUser.id] == null) {
       this.users[this.playingUser.id] = {
-        name: 'User 1',
-        lives: 3,
+        name: 'You',
+        lives: 5,
         score: 0,
         img: 'https://i.pravatar.cc/300?img=5',
       }

@@ -25,10 +25,16 @@ export function getWordArray(word: string): Word[] {
 }
 
 export const words: string[] = [
-    "CANDY APPLE",
-    "BANANA MILKSHAKE",
-    "CAT NAP",
-    "HOTDOG",
-    "ELEPHANT TUSK",
-    "FOX GO TO BED",
+    "CLOUD COMPUTING",
+    "BIG DATA",
+    "BUISNESS INTEL",
+    "DATABASE",
+    "ENSAT",
+    "WEBINAIRES",
+    "GENIE INFO",
+    "COMPUTER SCIENCE",
+    "METHODE AGILE",
+    "SCRUM",
+    "TRELLO",
+    "GITHUB",
 ]

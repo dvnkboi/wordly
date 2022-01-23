@@ -7,14 +7,24 @@
     :replayPrompt="true"
   />
   <div
-    class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0"
-    data-test="singlePlayer"
+    class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0 bg-gradient-to-br from-sky-400 to-blue-600"
+    data-test="MultiPlayer"
   >
     <transition name="fade-left" appear>
       <div
-        class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+        class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col"
       >
         <UserScore :users="users" />
+        <div
+          class="flex justify-start items-center w-full gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col"
+        >
+          <h1 class="w-full">Invite Your Friends With this code</h1>
+          <div
+            @keyup.prevent.stop
+            class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg"
+            tabindex="-1"
+          >{{ roomId }}</div>
+        </div>
       </div>
     </transition>
     <transition name="fade-down" appear>
@@ -29,6 +39,7 @@
           id="gameContainer"
           :gameTimeStamp="gameTimeStamp"
           :alreadyGuessedPush="alreadyGuessed"
+          :guessLock="guessLock"
         />
       </div>
     </transition>
@@ -56,7 +67,6 @@ import Game from '../components/game.vue'
 import UserScore from '../components/userScore.vue';
 import BigPrompt from '../components/bigPrompt.vue';
 import { map, wait, getWordArray, words } from 'shared';
-import { v4 as uuidv4 } from 'uuid';
 import { io } from 'socket.io-client';
 
 export default {
@@ -164,10 +174,12 @@ export default {
     sendMsg(msg) {
       this.socket.emit('chatMsg', msg);
     },
-    handleGuess(letter, correct) {
-      if (this.deadLock) return;
-      console.log('guess', letter, correct);
+    async handleGuess(letter, correct) {
+      if (this.deadLock || this.guessLock) return;
+      this.guessLock = true;
       this.socket.emit('guessed', letter, correct);
+      await wait(500);
+      this.guessLock = false;
     },
     readState(state) {
       if (!state) return;

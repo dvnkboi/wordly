@@ -1,5 +1,9 @@
 <template>
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <transition name="fade-x">
+      <component :is="Component" class="transition duration-500 transform overflow-hidden" />
+    </transition>
+  </router-view>
 </template>
 
 <script>
@@ -16,6 +20,11 @@ export default {
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  @apply bg-gradient-to-br from-sky-400 to-blue-600;
+}
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -23,6 +32,16 @@ export default {
 
 .fade-left-enter-from,
 .fade-left-leave-to {
+  opacity: 0;
+  transform: translateX(-25px);
+}
+
+.fade-x-enter-from {
+  opacity: 0;
+  transform: translateX(25px);
+}
+
+.fade-x-leave-to {
   opacity: 0;
   transform: translateX(-25px);
 }
