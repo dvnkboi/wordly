@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.words = exports.getWordArray = exports.alpha = exports.wait = exports.map = void 0;
 function map(x, in_min, in_max, out_min, out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    return Math.max(Math.min((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min, out_max), out_min);
 }
 exports.map = map;
 function wait(ms) {
@@ -22,11 +22,17 @@ function getWordArray(word) {
 }
 exports.getWordArray = getWordArray;
 exports.words = [
-    "CANDY APPLE",
-    "BANANA MILKSHAKE",
-    "CAT NAP",
-    "HOTDOG",
-    "ELEPHANT TUSK",
-    "FOX GO TO BED",
+    "CLOUD COMPUTING",
+    "BIG DATA",
+    "BUISNESS INTEL",
+    "DATABASE",
+    "ENSAT",
+    "WEBINAIRES",
+    "GENIE INFO",
+    "COMPUTER SCIENCE",
+    "METHODE AGILE",
+    "SCRUM",
+    "TRELLO",
+    "GITHUB",
 ];
 //# sourceMappingURL=utils.js.map
