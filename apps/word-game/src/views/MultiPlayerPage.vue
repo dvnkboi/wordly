@@ -66,7 +66,7 @@ import Chat from '../components/chat.vue'
 import Game from '../components/game.vue'
 import UserScore from '../components/userScore.vue';
 import BigPrompt from '../components/bigPrompt.vue';
-import { map, wait, getWordArray, words } from 'shared';
+import { wait } from 'shared';
 import { io } from 'socket.io-client';
 
 export default {
@@ -117,7 +117,7 @@ export default {
       }
     },
     connectSocket() {
-      this.socket = io('ws://localhost:3001');
+      this.socket = io(`ws://${import.meta.env.VITE_HOST}`);
 
       this.playerName = this.$route.params.playerName;
       this.roomId = this.$route.params.roomId;
