@@ -117,7 +117,7 @@ export default {
       }
     },
     connectSocket() {
-      this.socket = io(`ws://${import.meta.env.VITE_HOST}`);
+      this.socket = io(`ws://${import.meta.env.VITE_HOST}`, { secure: true, rejectUnauthorized: false });
 
       this.playerName = this.$route.params.playerName;
       this.roomId = this.$route.params.roomId;
