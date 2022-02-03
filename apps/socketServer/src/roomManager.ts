@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 
-import { map, getWordArray, words, wait } from "shared";
+import { map, getWordArray, words } from "shared";
 
 interface RoomUser {
   room: string,
@@ -123,15 +123,10 @@ export class RoomManager {
 
     socket.join(room);
     this.io.to(room).emit('roomUsersState', this.getUsers(room), this.roomState.get(room));
-    this.botSpeak(room, `${user.name} has joined the room`);
 
     if (Object.keys(roomUsers).length === 1) {
       this.startGame(room);
     }
-  }
-
-  public botSpeak(room: string, msg: string) {
-    this.io.to(room).emit('bot', msg);
   }
 
   //? removes user from room map
@@ -144,7 +139,6 @@ export class RoomManager {
     this.rooms.set(room, roomUsers);
 
     this.io.to(room).emit('roomUsersState', this.getUsers(room));
-    this.botSpeak(room, `${user.name} has left the room`);
   }
 
   //? gets users that are in a room
@@ -158,15 +152,13 @@ export class RoomManager {
     const state = {
       round: 1,
       word: randomWord,
-      ...this.countLetters(randomWord),
-      alreadyGuessed: []
+      ...this.countLetters(randomWord)
     }
 
     this.roomState.set(room, state);
 
+    console.log(this.getUsers(room), this.roomState.get(room))
     this.io.to(room).emit('startGame', this.getUsers(room), this.roomState.get(room));
-
-    this.botSpeak(room, `game started! This word has ${state.letterCount} letters`);
   }
 
   public countLetters(word: any) {
@@ -190,30 +182,16 @@ export class RoomManager {
     const state = {
       round: this.roomState.get(room).round + 1,
       word: randomWord,
-      ...this.countLetters(randomWord),
-      alreadyGuessed: []
+      ...this.countLetters(randomWord)
     }
-
-    if (this.roomState.get(room).round >= 5) {
-      state.round = 0;
-      const users = this.getUsers(room);
-      for (let userId in users) {
-        users[userId].lives = 10;
-        users[userId].score = 0;
-      }
-      this.rooms.set(room, users);
-    }
-
 
     this.roomState.set(room, state);
     this.io.to(room).emit('advanceRound', randomWord, this.getUsers(room), this.roomState.get(room));
-    this.botSpeak(room, `round ${state.round}! This word has ${state.letterCount} letters`);
   }
 
   public hanldeGuess(room: string, user: any, guess: string, correct: boolean) {
     if (correct) {
       let { round, word, lettersLeft, letterCount } = this.roomState.get(room);
-
       word.map((letter: { ltr: string; isGuessed: boolean; }) => {
         if (letter.ltr.toLowerCase() == guess.toLowerCase()) {
           letter.isGuessed = true;
@@ -226,11 +204,8 @@ export class RoomManager {
         round,
         word,
         lettersLeft,
-        letterCount,
-        alreadyGuessed: [...this.roomState.get(room).alreadyGuessed, guess.toLowerCase()]
+        letterCount
       });
-
-      this.botSpeak(room, `${user.name} guessed ${guess} correctly!`);
 
       if (lettersLeft <= 0) {
         this.advanceRound(room);
@@ -239,20 +214,12 @@ export class RoomManager {
     }
     else {
       user.lives--;
-      const alreadyGuessed = [...this.roomState.get(room).alreadyGuessed, guess.toLowerCase()];
-
-      const state = this.roomState.get(room);
-      state.alreadyGuessed = alreadyGuessed;
-
-      this.roomState.set(room, state);
-
-      this.botSpeak(room, `${user.name} guessed ${guess} incorrectly!`);
     }
 
     const roomUsers: Record<string, any> = this.getUsers(room);
     roomUsers[user.id] = user;
     this.rooms.set(room, roomUsers);
 
-    this.io.to(room).emit('roomUsersState', this.getUsers(room), this.roomState.get(room));
+    this.io.to(room).emit('handleGuess', this.getUsers(room), this.roomState.get(room));
   }
 }
