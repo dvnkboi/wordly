@@ -1,18 +1,22 @@
 <template>
   <div class="w-full h-full rounded-2xl px-4 py-2 gap-10 flex justify-start items-center flex-col">
     <div class="w-full flex justify-start items-start flex-col">
+      <!-- //!affichage de round et lettres dans le mot en haut -->
       <h1 class="text-5xl font-bold italic">Round {{ round }}</h1>
       <h2 class="text-2xl font-normal">{{ lettersLeft }} letters</h2>
     </div>
     <div class="px-10 py-4 shadow-2xl rounded-2xl flex justify-center items-center">
+      <!-- //!mot a deviner -->
       <h1
         :class="{ 'px-6': letter.ltr == ' ', 'px-1': letter.ltr != ' ' }"
         class="text-5xl font-bold italic"
         :key="idx"
-        v-for="(letter,idx) in word"
+        v-for="(letter, idx) in word"
       >{{ letter.isGuessed ? letter.ltr : '&#8213;' }}</h1>
     </div>
+    <!-- //!liste des lettres deja devine -->
     <AlreadyGuessed :alreadyGuessed="alreadyGuessed" />
+    <!-- //!hangman qui s'afficher si on est en signleplayer -->
     <svg
       v-if="lives != null"
       height="400"
@@ -63,6 +67,7 @@ export default {
     };
   },
   methods: {
+    //! fonction qui permet de savoir si la lettre tapee en clavier est dans le mot
     handleKeypress(e) {
       if (this.guessLock) return;
       if (alpha.includes(e.key.toUpperCase()) && !this.alreadyGuessed.includes(e.key)) {
@@ -75,11 +80,13 @@ export default {
         this.handleDuplicates(e);
       }
     },
+    //! fonction qui permet de verifier si la lettre tapee en clavier est deja dans le mot
     handleDuplicates(e) {
       this.alreadyGuessed.push(e.key.toLowerCase());
       //socket stuff
     }
   },
+  //! detecter les touches clavier
   mounted() {
     window.addEventListener("keyup", this.handleKeypress);
   },

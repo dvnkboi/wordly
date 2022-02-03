@@ -5,6 +5,7 @@
       class="h-full w-full flex justify-start items-center flex-col gap-5 overflow-auto p-5 pb-10"
     >
       <transition-group name="fade-left" appear>
+        <!-- //!liste des bulles de chat avec infos de l'emetteur -->
         <bubble
           class="transition duration-300"
           :key="message"
@@ -14,6 +15,7 @@
         />
       </transition-group>
     </div>
+    <!-- //!input for message to send to users -->
     <chat-box @msgSend="handleMsg" v-if="!sp" />
   </div>
 </template>
