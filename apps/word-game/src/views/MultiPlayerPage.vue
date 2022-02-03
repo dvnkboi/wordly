@@ -16,22 +16,14 @@
       >
         <UserScore :users="users" />
         <div
-          :class="{ 'opacity-80': textCopied, 'opacity-100': !textCopied }"
-          class="flex justify-start items-center w-11/12 gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col mb-2 transition duration-500"
+          class="flex justify-start items-center w-full gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col"
         >
           <h1 class="w-full">Invite Your Friends With this code</h1>
           <div
             @keyup.prevent.stop
-            class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg text-sm relative w-full pr-12"
+            class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg"
             tabindex="-1"
-          >
-            {{ roomId }}
-            <span
-              @click="copyRoomId"
-              :class="{ 'bg-blue-300': textCopied, 'bg-blue-400': !textCopied }"
-              class="px-1 py-0.5 absolute right-1 top-1 bottom-1 h-5 flex justify-center items-center hover:-translate-y-0.5 transform transition duration-300 rounded-md cursor-pointer shadow-lg"
-            >{{ textCopied ? "copied" : "copy" }}</span>
-          </div>
+          >{{ roomId }}</div>
         </div>
       </div>
     </transition>
@@ -99,7 +91,6 @@ export default {
         timeStamp: new Date()
       },
       guessLock: false,
-      textCopied: false,
     }
   },
   methods: {
@@ -126,7 +117,7 @@ export default {
       }
     },
     connectSocket() {
-      this.socket = io.connect(`${import.meta.env.VITE_HOST}`);
+      this.socket = io(`ws://${import.meta.env.VITE_HOST}`, { secure: true, rejectUnauthorized: false });
 
       this.playerName = this.$route.params.playerName;
       this.roomId = this.$route.params.roomId;
@@ -139,7 +130,7 @@ export default {
           name: this.playerName,
           lives: 10,
           score: 0,
-          img: `https://thecatapi.com/api/images/get?format=src&type=jpg`
+          img: `https://i.pravatar.cc/300?img=${Math.floor(Math.random() * 10)}`
         }
 
         console.log('connected');
@@ -198,26 +189,6 @@ export default {
       this.word = state.word;
       this.alreadyGuessed = state.alreadyGuessed;
       console.log(state.alreadyGuessed)
-    },
-    copyRoomId() {
-      if (!navigator.clipboard) {
-        const el = document.createElement('textarea');
-        el.value = this.roomId;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-      } else {
-        const proxy = this;
-        navigator.clipboard.writeText(this.roomId).then(
-          function () {
-            proxy.textCopied = true;
-          })
-          .catch(
-            function () {
-              proxy.textCopied = false;
-            });
-      }
     }
   },
   created() {
