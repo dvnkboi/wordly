@@ -6,7 +6,6 @@
       class="px-2 pb-1 w-full flex justify-start items-start flex-col gap-2"
     >
       <transition-group name="fade-left" appear>
-        <!-- //!liste des utilisateurs -->
         <scoreCard
           class="transition duration-300 transform"
           :key="user[0]"

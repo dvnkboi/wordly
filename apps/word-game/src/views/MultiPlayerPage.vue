@@ -1,5 +1,4 @@
 <template>
-  <!--//!message a voir quand qlqun perd ou gagne -->
   <bigPrompt
     @replay="startGame"
     class="absolute z-50"
@@ -7,13 +6,11 @@
     :message="gameEndMsg"
     :replayPrompt="true"
   />
-  <!-- //!toute la page -->
   <div
     class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0 bg-gradient-to-br from-sky-400 to-blue-600"
     data-test="MultiPlayer"
   >
     <transition name="fade-left" appear>
-      <!-- //! liste de scores des utilisateurs  -->
       <div
         class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col"
       >
@@ -39,7 +36,6 @@
       </div>
     </transition>
     <transition name="fade-down" appear>
-      <!-- //! jeu -->
       <div
         class="w-7/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
       >
@@ -60,7 +56,6 @@
       <div
         class="w-3/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
       >
-        <!--//!chat -->
         <Chat
           :users="users"
           :chatMsgToPush="chatMsgToPush"
@@ -108,7 +103,6 @@ export default {
     }
   },
   methods: {
-    //! logique pour traiter la saisie d'une lettre (traitement des cas si lettre et correct ou pas)
     async handleGuess(letter, correct) {
       if (this.guessLock) return;
       this.guessLock = true;
@@ -121,11 +115,9 @@ export default {
 
       this.guessLock = false;
     },
-    //! envoie l'evenement de start game au serveur
     async startGame() {
       this.socket.emit('startGame');
     },
-    //! ecrit un message dit par le bot sur le chat
     botSpeak(msg) {
       this.chatMsgToPush = {
         userId: 0,
@@ -133,12 +125,8 @@ export default {
         timeStamp: new Date()
       }
     },
-    //! effectue la connection au socket sur le serveur et initialise tout les listeners d'evenement
     connectSocket() {
-      this.socket = io.connect(`${import.meta.env.VITE_HOST}`, {
-        transports:
-          ['websocket'], upgrade: false
-      }, { 'force new connection': true });
+      this.socket = io.connect(`${import.meta.env.VITE_HOST}`, { rejectUnauthorized: false });
 
       this.playerName = this.$route.params.playerName;
       this.roomId = this.$route.params.roomId;
@@ -192,11 +180,9 @@ export default {
       });
 
     },
-    //! envoie le msg tape en chat au serveur
     sendMsg(msg) {
       this.socket.emit('chatMsg', msg);
     },
-    //! envoie le mot devine au serveur
     async handleGuess(letter, correct) {
       if (this.deadLock || this.guessLock) return;
       this.guessLock = true;
@@ -204,7 +190,6 @@ export default {
       await wait(500);
       this.guessLock = false;
     },
-    //! lire l'etat de la partie
     readState(state) {
       if (!state) return;
       this.round = state.round;
@@ -214,7 +199,6 @@ export default {
       this.alreadyGuessed = state.alreadyGuessed;
       console.log(state.alreadyGuessed)
     },
-    //! copy room id
     copyRoomId() {
       if (!navigator.clipboard) {
         const el = document.createElement('textarea');

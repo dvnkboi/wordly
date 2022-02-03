@@ -5,7 +5,6 @@
     <div class="flex justify-center items-center h-10 w-10 relative">
       <transition name="fade-left" appear>
         <div class="transition duration-300 transform">
-          <!-- //!crown de l'utilisateur avec points max -->
           <i
             v-if="first"
             class="ri-vip-crown-2-fill text-yellow-400 -translate-y-7 -rotate-45 transform absolute"
@@ -17,7 +16,6 @@
         class="p-1 bg-gradient-to-tr from-fuchsia-400 to-orange-400 w-12 h-12 rounded-full shrink-0"
       >
         <transition name="fade" appear>
-          <!-- //!skull pour utlisateur mort -->
           <div
             v-if="user.lives <= 0"
             class="absolute w-full h-full bg-slate-100 bg-opacity-60 flex justify-center items-center rounded-full transition duration-300"
@@ -25,7 +23,7 @@
             <i class="ri-skull-2-fill"></i>
           </div>
         </transition>
-        <!-- //!image de l'utilisateur -->
+
         <img
           :src="user.img"
           alt="cat"
@@ -35,7 +33,6 @@
       </div>
     </div>
     <div class="flex justify-start items-start flex-col">
-      <!-- //!iformation de l'utilisateur -->
       <div class="text-base capitalize font-semibold flex justify-start items-center">
         {{ user.name }}
         <span class="text-base px-1">|</span>
