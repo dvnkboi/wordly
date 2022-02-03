@@ -18,7 +18,6 @@ export declare class RoomManager {
     getRooms(): Map<string, Record<string, any>>;
     getRoom(room: string): Record<string, any>;
     addUser(room: string, user: any, socket: Socket): void;
-    botSpeak(room: string, msg: string): void;
     removeUser(room: string, user: any, socket: Socket): void;
     getUsers(room: string): Record<string, any>;
     startGame(room: string): void;
