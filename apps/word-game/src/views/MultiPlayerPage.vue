@@ -126,7 +126,7 @@ export default {
       }
     },
     connectSocket() {
-      this.socket = io.connect(`${import.meta.env.VITE_HOST}`, { rejectUnauthorized: false });
+      this.socket = io.connect(`${import.meta.env.VITE_HOST}`);
 
       this.playerName = this.$route.params.playerName;
       this.roomId = this.$route.params.roomId;
