@@ -89,10 +89,14 @@ class RoomManager {
         roomUsers[userId] = user;
         this.rooms.set(room, roomUsers);
         socket.join(room);
-        this.io.to(room).emit('roomUsersState', this.getUsers(room));
+        this.io.to(room).emit('roomUsersState', this.getUsers(room), this.roomState.get(room));
+        this.botSpeak(room, `${user.name} has joined the room`);
         if (Object.keys(roomUsers).length === 1) {
             this.startGame(room);
         }
+    }
+    botSpeak(room, msg) {
+        this.io.to(room).emit('bot', msg);
     }
     //? removes user from room map
     removeUser(room, user, socket) {
@@ -101,6 +105,7 @@ class RoomManager {
         delete roomUsers[user.id];
         this.rooms.set(room, roomUsers);
         this.io.to(room).emit('roomUsersState', this.getUsers(room));
+        this.botSpeak(room, `${user.name} has left the room`);
     }
     //? gets users that are in a room
     getUsers(room) {
@@ -111,11 +116,12 @@ class RoomManager {
         const state = {
             round: 1,
             word: randomWord,
-            ...this.countLetters(randomWord)
+            ...this.countLetters(randomWord),
+            alreadyGuessed: []
         };
         this.roomState.set(room, state);
-        console.log(this.getUsers(room), this.roomState.get(room));
         this.io.to(room).emit('startGame', this.getUsers(room), this.roomState.get(room));
+        this.botSpeak(room, `game started! This word has ${state.letterCount} letters`);
     }
     countLetters(word) {
         let letterCount = 0;
@@ -137,10 +143,21 @@ class RoomManager {
         const state = {
             round: this.roomState.get(room).round + 1,
             word: randomWord,
-            ...this.countLetters(randomWord)
+            ...this.countLetters(randomWord),
+            alreadyGuessed: []
         };
+        if (this.roomState.get(room).round >= 5) {
+            state.round = 0;
+            const users = this.getUsers(room);
+            for (let userId in users) {
+                users[userId].lives = 10;
+                users[userId].score = 0;
+            }
+            this.rooms.set(room, users);
+        }
         this.roomState.set(room, state);
         this.io.to(room).emit('advanceRound', randomWord, this.getUsers(room), this.roomState.get(room));
+        this.botSpeak(room, `round ${state.round}! This word has ${state.letterCount} letters`);
     }
     hanldeGuess(room, user, guess, correct) {
         if (correct) {
@@ -156,19 +173,26 @@ class RoomManager {
                 round,
                 word,
                 lettersLeft,
-                letterCount
+                letterCount,
+                alreadyGuessed: [...this.roomState.get(room).alreadyGuessed, guess.toLowerCase()]
             });
+            this.botSpeak(room, `${user.name} guessed ${guess} correctly!`);
             if (lettersLeft <= 0) {
                 this.advanceRound(room);
             }
         }
         else {
             user.lives--;
+            const alreadyGuessed = [...this.roomState.get(room).alreadyGuessed, guess.toLowerCase()];
+            const state = this.roomState.get(room);
+            state.alreadyGuessed = alreadyGuessed;
+            this.roomState.set(room, state);
+            this.botSpeak(room, `${user.name} guessed ${guess} incorrectly!`);
         }
         const roomUsers = this.getUsers(room);
         roomUsers[user.id] = user;
         this.rooms.set(room, roomUsers);
-        this.io.to(room).emit('handleGuess', this.getUsers(room), this.roomState.get(room));
+        this.io.to(room).emit('roomUsersState', this.getUsers(room), this.roomState.get(room));
     }
 }
 exports.RoomManager = RoomManager;
