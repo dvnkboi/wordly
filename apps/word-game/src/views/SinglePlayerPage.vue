@@ -138,6 +138,7 @@ export default {
           letter.isGuessed = true;
           this.users[this.playingUser.id].score += Math.ceil(map(this.lettersLeft, this.letterCount, 0, 20, 0));
           this.lettersLeft--;
+          console.log(this.lettersLeft, this.letterCount);
         }
       });
     },
@@ -154,6 +155,8 @@ export default {
           this.lettersLeft++;
         }
       });
+
+      console.log(this.lettersLeft, this.letterCount);
     },
     botSpeak(msg) {
       this.chatMsgToPush = {
