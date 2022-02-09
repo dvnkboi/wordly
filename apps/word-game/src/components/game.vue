@@ -7,9 +7,9 @@
     <div class="px-10 py-4 shadow-2xl rounded-2xl flex justify-center items-center">
       <h1
         :class="{ 'px-6': letter.ltr == ' ', 'px-1': letter.ltr != ' ' }"
-        class="text-5xl font-bold italic"
+        class="text-5xl font-bold italic w-14"
         :key="idx"
-        v-for="(letter,idx) in word"
+        v-for="(letter, idx) in word"
       >{{ letter.isGuessed ? letter.ltr : '&#8213;' }}</h1>
     </div>
     <AlreadyGuessed :alreadyGuessed="alreadyGuessed" />
@@ -64,20 +64,26 @@ export default {
   },
   methods: {
     handleKeypress(e) {
+      console.log("word: ", this.word);
       if (this.guessLock) return;
-      if (alpha.includes(e.key.toUpperCase()) && !this.alreadyGuessed.includes(e.key)) {
-        if (this.word.find(letter => letter.ltr.toLowerCase() === e.key.toLowerCase())) {
-          this.$emit("guessedWord", e.key.toLowerCase(), true);
+      if (alpha.includes(e.key.toUpperCase()) && !this.alreadyGuessed.includes(e.key.toUpperCase())) {
+        const search = this.word.find(letter => {
+          console.log(letter.ltr, e.key.toUpperCase());
+          return letter.ltr.toUpperCase() === e.key.toUpperCase()
+        });
+        if (search) {
+          this.$emit("guessedWord", e.key.toUpperCase(), true);
+          console.log("correct guess", e.key.toUpperCase(), true);
         }
         else {
-          this.$emit("guessedWord", e.key.toLowerCase(), false);
+          this.$emit("guessedWord", e.key.toUpperCase(), false);
+          console.log("incorrect guess", e.key.toUpperCase(), false);
         }
         this.handleDuplicates(e);
       }
     },
     handleDuplicates(e) {
-      this.alreadyGuessed.push(e.key.toLowerCase());
-      //socket stuff
+      this.alreadyGuessed.push(e.key.toUpperCase());
     }
   },
   mounted() {

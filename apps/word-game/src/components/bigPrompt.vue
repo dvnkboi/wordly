@@ -2,11 +2,12 @@
   <transition name="fade" appear>
     <div
       v-if="shown"
-      class="absolte w-screen h-screen bg-slate-400 bg-opacity-30 backdrop-blur-lg flex justify-center items-center gap-16 flex-col transition duration-1000"
+      class="absolute w-screen h-screen bg-slate-400 bg-opacity-30 backdrop-blur-lg flex justify-center items-center gap-16 flex-col transition duration-1000"
     >
       <h1 class="text-7xl font-bold italic">{{ message }}</h1>
       <div
         @click="replay"
+        v-if="replayPrompt"
         class="bg-slate-100 rounded-2xl px-3 py-2 shadow-xl cursor-pointer group transform hover:-translate-y-1 transition duration-300"
       >
         <span

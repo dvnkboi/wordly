@@ -48,7 +48,7 @@ export default {
         name: 'Useless Bot',
         score: Infinity,
         lives: -1,
-        img: 'https://thecatapi.com/api/images/get?format=src&type=jpg',
+        img: `https://thecatapi.com/api/images/get?format=src&type=jpg&cache=${Date.now()}`,
       },
     },
     message: {

@@ -55,7 +55,7 @@ export default {
       default: {
         name: 'Cat',
         score: 0,
-        img: 'https://thecatapi.com/api/images/get?format=src&type=jpg',
+        img: `https://thecatapi.com/api/images/get?format=src&type=jpg&cache=${Date.now()}`,
       },
     },
     message: {

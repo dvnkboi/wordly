@@ -14,7 +14,6 @@ const routes = [
     path: "/multiplayer/:roomId/:playerName",
     name: "multiplayer",
     component: MultiPlayer,
-
   },
   {
     path: "/roomCreation",

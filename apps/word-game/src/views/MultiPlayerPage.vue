@@ -1,71 +1,74 @@
 <template>
-  <bigPrompt
-    @replay="startGame"
-    class="absolute z-50"
-    :shown="showPrompt"
-    :message="gameEndMsg"
-    :replayPrompt="true"
-  />
-  <div
-    class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0 bg-gradient-to-br from-sky-400 to-blue-600"
-    data-test="MultiPlayer"
-  >
-    <transition name="fade-left" appear>
-      <div
-        class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col"
-      >
-        <UserScore :users="users" />
+  <div class="h-screen w-screen transition duration-300 transform overflow-hidden">
+    <bigPrompt
+      @replay="newGame"
+      class="absolute z-50"
+      :shown="showPrompt"
+      :message="gameEndMsg"
+      :replayPrompt="true"
+    />
+    <loading :show="loading" />
+    <div
+      class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0 bg-gradient-to-br from-sky-400 to-blue-600"
+      data-test="MultiPlayer"
+    >
+      <transition name="fade-left" appear>
         <div
-          :class="{ 'opacity-80': textCopied, 'opacity-100': !textCopied }"
-          class="flex justify-start items-center w-11/12 gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col mb-2 transition duration-500"
+          class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col"
         >
-          <h1 class="w-full">Invite Your Friends With this code</h1>
+          <UserScore :users="playingUsers" />
           <div
-            @keyup.prevent.stop
-            class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg text-sm relative w-full pr-12"
-            tabindex="-1"
+            :class="{ 'opacity-80': textCopied, 'opacity-100': !textCopied }"
+            class="flex justify-start items-center w-11/12 gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col mb-2 transition duration-500"
           >
-            {{ roomId }}
-            <span
-              @click="copyRoomId"
-              :class="{ 'bg-blue-300': textCopied, 'bg-blue-400': !textCopied }"
-              class="px-1 py-0.5 absolute right-1 top-1 bottom-1 h-5 flex justify-center items-center hover:-translate-y-0.5 transform transition duration-300 rounded-md cursor-pointer shadow-lg"
-            >{{ textCopied ? "copied" : "copy" }}</span>
+            <h1 class="w-full">Invite Your Friends With this code</h1>
+            <div
+              @keyup.prevent.stop
+              class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg text-sm relative w-full pr-12"
+              tabindex="-1"
+            >
+              {{ roomId }}
+              <span
+                @click="copyRoomId"
+                :class="{ 'bg-blue-300': textCopied, 'bg-blue-400': !textCopied }"
+                class="px-1 py-0.5 absolute right-1 top-1 bottom-1 h-5 flex justify-center items-center hover:-translate-y-0.5 transform transition duration-300 rounded-md cursor-pointer shadow-lg"
+              >{{ textCopied ? "copied" : "copy" }}</span>
+            </div>
           </div>
         </div>
-      </div>
-    </transition>
-    <transition name="fade-down" appear>
-      <div
-        class="w-7/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
-      >
-        <Game
-          @guessedWord="handleGuess"
-          :word="word"
-          :lettersLeft="lettersLeft"
-          :round="round"
-          id="gameContainer"
-          :gameTimeStamp="gameTimeStamp"
-          :alreadyGuessedPush="alreadyGuessed"
-          :guessLock="guessLock || deadLock"
-        />
-      </div>
-    </transition>
+      </transition>
+      <transition name="fade-down" appear>
+        <div
+          class="w-7/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+        >
+          <Game
+            @guessedWord="handleGuess"
+            :word="word"
+            :lettersLeft="lettersLeft"
+            :round="round"
+            id="gameContainer"
+            :gameTimeStamp="gameTimeStamp"
+            :alreadyGuessedPush="alreadyGuessed"
+            :guessLock="guessLock || deadLock || lettersLeft < 1"
+          />
+        </div>
+      </transition>
 
-    <transition name="fade-right" appear>
-      <div
-        class="w-3/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
-      >
-        <Chat
-          :users="users"
-          :chatMsgToPush="chatMsgToPush"
-          :playingUser="playingUser"
-          id="chatContainer"
-          :sp="false"
-          @msgSend="sendMsg"
-        />
-      </div>
-    </transition>
+      <transition name="fade-right" appear>
+        <div
+          class="w-3/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+        >
+          <Chat
+            :users="users"
+            :chatMsgToPush="chatMsgToPush"
+            :playingUser="playingUser"
+            id="chatContainer"
+            :sp="false"
+            @msgSend="sendMsg"
+          />
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -76,6 +79,7 @@ import UserScore from '../components/userScore.vue';
 import BigPrompt from '../components/bigPrompt.vue';
 import { wait } from 'shared';
 import { io } from 'socket.io-client';
+import Loading from "../components/loading.vue";
 
 export default {
   data() {
@@ -91,6 +95,7 @@ export default {
       gameTimeStamp: Date.now(),
       alreadyGuessed: [],
       users: {},
+      playingUsers: {},
       word: [],
       letterCount: 0,
       lettersLeft: 0,
@@ -100,6 +105,9 @@ export default {
       },
       guessLock: false,
       textCopied: false,
+      nextRoomId: "lobby",
+      loading: true,
+      newGameInit: false,
     }
   },
   methods: {
@@ -125,7 +133,13 @@ export default {
         timeStamp: new Date()
       }
     },
-    connectSocket() {
+    async connectSocket() {
+
+      this.reset();
+
+      if (this.socket) this.socket.close();
+
+      this.loading = true;
       this.socket = io.connect(`${import.meta.env.VITE_HOST}`, {
         transports: ['websocket'],
         upgrade: true,
@@ -137,7 +151,7 @@ export default {
 
       this.playerName = this.$route.params.playerName;
       this.roomId = this.$route.params.roomId;
-      this.socket.on('connect', () => {
+      this.socket.once('connect', async () => {
 
         this.playingUser = this.socket.id;
 
@@ -146,12 +160,16 @@ export default {
           name: this.playerName,
           lives: 10,
           score: 0,
-          img: `https://thecatapi.com/api/images/get?format=src&type=jpg`
+          img: `https://thecatapi.com/api/images/get?format=src&type=jpg&cache=${Date.now()}`,
         }
 
         console.log('connected');
 
         this.socket.emit('join', this.users[this.playingUser.id], this.roomId);
+
+
+        await wait(1000);
+        this.loading = false;
       });
 
       this.socket.on('bot', (msg) => {
@@ -165,25 +183,22 @@ export default {
         else this.deadLock = false;
       })
 
-      // this.socket.on('gameEnd', (msg) => {
-      //   this.gameEndMsg = msg;
-      //   this.showPrompt = true;
-      // });
-
       this.socket.on('chatMsg', (msg) => {
 
         this.chatMsgToPush = {
           ...msg,
           timeStamp: new Date()
         }
-
-        console.log(this.chatMsgToPush)
       });
 
       this.socket.on('startGame', (users, state) => {
         this.users = users;
-        this.readState(state)
-        console.log('start game', state);
+        this.readState(state);
+      });
+
+      this.socket.once("advanceRound", (users, state) => {
+        this.users = users;
+        this.readState(state);
       });
 
     },
@@ -194,17 +209,55 @@ export default {
       if (this.deadLock || this.guessLock) return;
       this.guessLock = true;
       this.socket.emit('guessed', letter, correct);
-      await wait(500);
+      await wait(200);
       this.guessLock = false;
     },
+    reset() {
+      this.round = 0;
+      this.letterCount = 0;
+      this.lettersLeft = 10;
+      this.word = [];
+      this.alreadyGuessed = 0;
+      this.nextRoomId = "0000-0000-0000-0000";
+    },
     readState(state) {
-      if (!state) return;
-      this.round = state.round;
-      this.letterCount = state.letterCount;
-      this.lettersLeft = state.lettersLeft;
-      this.word = state.word;
-      this.alreadyGuessed = state.alreadyGuessed;
-      console.log(state.alreadyGuessed)
+      if (!state) {
+        console.log("NO STATE");
+        setTimeout(() => this.socket.emit('getState'), 250);
+        return;
+      }
+      else {
+        this.round = state.round;
+        this.letterCount = state.letterCount;
+        this.lettersLeft = state.lettersLeft;
+        this.word = state.word;
+        this.alreadyGuessed = state.alreadyGuessed;
+        this.nextRoomId = state.nextRoomId;
+        console.log(this.nextRoomId);
+
+        this.playingUsers = Object.entries(this.users).filter((e) => e[0] != "0").sort((a, b) => {
+          return b[1].score - a[1].score;
+        });
+
+        console.log(this.playingUsers);
+
+        if (state && state.round > 2 && !this.newGameInit) {
+          this.rounds = -1;
+          this.showPrompt = true;
+          console.log("set true");
+          this.gameEndMsg = 'Game Over < ' + this.playingUsers[0][1].name + ' > won!';
+        }
+      }
+    },
+    newGame() {
+      this.$router.push({
+        name: 'multiplayer',
+        params: {
+          playerName: this.playerName,
+          roomId: this.nextRoomId
+        }
+      });
+      setTimeout(() => window.location.reload(), 100);
     },
     copyRoomId() {
       if (!navigator.clipboard) {
@@ -234,6 +287,7 @@ export default {
     })
   },
   async mounted() {
+    console.log("mounted")
     this.connectSocket();
   },
   beforeUnmount() {
@@ -244,7 +298,8 @@ export default {
     Chat,
     Game,
     UserScore,
-    BigPrompt
+    BigPrompt,
+    Loading
   },
 }
 </script>

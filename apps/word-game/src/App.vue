@@ -1,7 +1,7 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="fade-x">
-      <component :is="Component" class="transition duration-500 transform overflow-hidden" />
+    <transition name="fade">
+      <component :is="Component" class="transition duration-1000 transform overflow-hidden" />
     </transition>
   </router-view>
 </template>

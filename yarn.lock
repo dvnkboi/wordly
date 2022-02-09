@@ -1914,6 +1914,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+  languageName: node
+  linkType: hard
+
 "@types/yargs-parser@npm:*":
   version: 20.2.1
   resolution: "@types/yargs-parser@npm:20.2.1"
@@ -7577,11 +7584,13 @@ __metadata:
   resolution: "socketserver@workspace:apps/socketserver"
   dependencies:
     "@types/node": ^17.0.8
+    "@types/uuid": ^8.3.4
     express: ^4.17.2
     shared: "*"
     socket.io: ^4.4.1
     ts-node: ^10.4.0
     typescript: ^4.5.4
+    uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
