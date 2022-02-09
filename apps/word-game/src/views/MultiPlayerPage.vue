@@ -47,7 +47,7 @@
           id="gameContainer"
           :gameTimeStamp="gameTimeStamp"
           :alreadyGuessedPush="alreadyGuessed"
-          :guessLock="guessLock"
+          :guessLock="guessLock || deadLock"
         />
       </div>
     </transition>
