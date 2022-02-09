@@ -128,9 +128,9 @@ export default {
     connectSocket() {
       this.socket = io.connect(`${import.meta.env.VITE_HOST}`, {
         transports: ['websocket'],
-        upgrade: false,
+        upgrade: true,
         rejectUnauthorized: false,
-        secure: false,
+        secure: true,
       },
         { 'force new connection': true }
       );

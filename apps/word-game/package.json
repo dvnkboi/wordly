@@ -13,10 +13,10 @@
     "localforage": "^1.10.0",
     "shared": "*",
     "socket.io-client": "^4.4.1",
+    "socketserver": "*",
     "uuid": "^8.3.2",
     "vue": "^3.2.25",
-    "vue-router": "4",
-    "socketserver": "*"
+    "vue-router": "4"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.16.7",
