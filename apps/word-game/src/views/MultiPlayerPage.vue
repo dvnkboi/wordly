@@ -127,9 +127,12 @@ export default {
     },
     connectSocket() {
       this.socket = io.connect(`${import.meta.env.VITE_HOST}`, {
-        transports:
-          ['websocket'], upgrade: false
-      }, { 'force new connection': true });
+        transports: ['websocket'],
+        upgrade: false,
+        secure: false,
+      },
+        { 'force new connection': true }
+      );
 
       this.playerName = this.$route.params.playerName;
       this.roomId = this.$route.params.roomId;
