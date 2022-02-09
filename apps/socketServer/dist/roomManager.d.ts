@@ -7,6 +7,7 @@ export declare class RoomManager {
     private rooms;
     private roomState;
     private socketMap;
+    private httpServer;
     private io;
     constructor();
     getRoomUser(socket: Socket): RoomUser;

@@ -8,6 +8,7 @@ class RoomManager {
     rooms;
     roomState;
     socketMap;
+    httpServer;
     io;
     constructor() {
         //!initialze maps
@@ -15,8 +16,15 @@ class RoomManager {
         this.socketMap = new Map();
         this.roomState = new Map();
         //!create server
-        const httpServer = (0, http_1.createServer)();
-        this.io = new socket_io_1.Server(httpServer, {
+        const express = require('express');
+        const app = express();
+        this.httpServer = (0, http_1.createServer)(app);
+        //!listen to non socket requests
+        app.get('/', (req, res) => {
+            res.send('listening on socket');
+        });
+        //!initialize socketio
+        this.io = new socket_io_1.Server(this.httpServer, {
             cors: {
                 origin: "*"
             }
@@ -59,7 +67,9 @@ class RoomManager {
     }
     //? starts server at given port
     listen(port) {
-        this.io.listen(port);
+        this.httpServer.listen(port, () => {
+            console.log(`listening on port ${port}`);
+        });
     }
     //? getter for socketio server
     getIo() {
