@@ -241,7 +241,7 @@ export default {
 
         console.log(this.playingUsers);
 
-        if (state && state.round > 2 && !this.newGameInit) {
+        if (state && state.round > 5 && !this.newGameInit) {
           this.rounds = -1;
           this.showPrompt = true;
           console.log("set true");
