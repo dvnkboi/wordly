@@ -7,10 +7,12 @@
     "@types/node": "^17.0.8",
     "express": "^4.17.2",
     "shared": "*",
+    "socket.io": "^4.4.1",
     "typescript": "^4.5.4",
-    "socket.io": "^4.4.1"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/uuid": "^8.3.4",
     "ts-node": "^10.4.0"
   },
   "scripts": {

@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoomManager = void 0;
 const http_1 = require("http");
-const socket_io_1 = require("socket.io");
 const shared_1 = require("shared");
+const socket_io_1 = require("socket.io");
+const uuid_1 = require("uuid");
 class RoomManager {
     rooms;
     roomState;
@@ -49,6 +50,10 @@ class RoomManager {
             socket.on('guessed', (guess, correct) => {
                 const { room, user } = this.getRoomUser(socket);
                 this.hanldeGuess(room, user, guess, correct);
+            });
+            socket.on("getState", () => {
+                const { room } = this.getRoomUser(socket);
+                this.io.to(room).emit('roomUsersState', this.getUsers(room), this.roomState.get(room));
             });
         });
     }
@@ -127,7 +132,8 @@ class RoomManager {
             round: 1,
             word: randomWord,
             ...this.countLetters(randomWord),
-            alreadyGuessed: []
+            alreadyGuessed: [],
+            nextRoomId: (0, uuid_1.v4)(),
         };
         this.roomState.set(room, state);
         this.io.to(room).emit('startGame', this.getUsers(room), this.roomState.get(room));
@@ -154,9 +160,10 @@ class RoomManager {
             round: this.roomState.get(room).round + 1,
             word: randomWord,
             ...this.countLetters(randomWord),
-            alreadyGuessed: []
+            alreadyGuessed: [],
+            nextRoomId: this.roomState.get(room).nextRoomId
         };
-        if (this.roomState.get(room).round >= 5) {
+        if (this.roomState.get(room).round > 5) {
             state.round = 0;
             const users = this.getUsers(room);
             for (let userId in users) {
@@ -166,14 +173,14 @@ class RoomManager {
             this.rooms.set(room, users);
         }
         this.roomState.set(room, state);
-        this.io.to(room).emit('advanceRound', randomWord, this.getUsers(room), this.roomState.get(room));
+        this.io.to(room).emit('roomUsersState', this.getUsers(room), this.roomState.get(room));
         this.botSpeak(room, `round ${state.round}! This word has ${state.letterCount} letters`);
     }
-    hanldeGuess(room, user, guess, correct) {
+    async hanldeGuess(room, user, guess, correct) {
         if (correct) {
             let { round, word, lettersLeft, letterCount } = this.roomState.get(room);
             word.map((letter) => {
-                if (letter.ltr.toLowerCase() == guess.toLowerCase()) {
+                if (letter.ltr.toUpperCase() == guess.toUpperCase()) {
                     letter.isGuessed = true;
                     user.score += Math.ceil((0, shared_1.map)(lettersLeft, letterCount, 0, 20, 0));
                     lettersLeft--;
@@ -184,16 +191,23 @@ class RoomManager {
                 word,
                 lettersLeft,
                 letterCount,
-                alreadyGuessed: [...this.roomState.get(room).alreadyGuessed, guess.toLowerCase()]
+                alreadyGuessed: [...this.roomState.get(room).alreadyGuessed, guess.toUpperCase()],
+                nextRoomId: this.roomState.get(room).nextRoomId
             });
             this.botSpeak(room, `${user.name} guessed ${guess} correctly!`);
             if (lettersLeft <= 0) {
+                const roomUsers = this.getUsers(room);
+                roomUsers[user.id] = user;
+                this.rooms.set(room, roomUsers);
+                this.io.to(room).emit('roomUsersState', this.getUsers(room), this.roomState.get(room));
+                await (0, shared_1.wait)(1000);
                 this.advanceRound(room);
+                return;
             }
         }
         else {
             user.lives--;
-            const alreadyGuessed = [...this.roomState.get(room).alreadyGuessed, guess.toLowerCase()];
+            const alreadyGuessed = this.roomState.get(room) ? [...this.roomState.get(room)?.alreadyGuessed, guess.toUpperCase()] : [guess.toUpperCase()];
             const state = this.roomState.get(room);
             state.alreadyGuessed = alreadyGuessed;
             this.roomState.set(room, state);

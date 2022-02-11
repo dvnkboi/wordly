@@ -28,7 +28,7 @@ export declare class RoomManager {
         lettersLeft: number;
     };
     advanceRound(room: string): void;
-    hanldeGuess(room: string, user: any, guess: string, correct: boolean): void;
+    hanldeGuess(room: string, user: any, guess: string, correct: boolean): Promise<void>;
 }
 export {};
 //# sourceMappingURL=roomManager.d.ts.map
