@@ -1,53 +1,57 @@
 <template>
-  <bigPrompt
-    @replay="startGame"
-    class="absolute z-50"
-    :shown="showPrompt"
-    :message="gameEndMsg"
-    :replayPrompt="true"
-  />
-  <div
-    class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0 bg-gradient-to-br from-sky-400 to-blue-600"
-    data-test="singlePlayer"
-  >
-    <transition name="fade-left" appear>
+  <transition name="fade-x" appear>
+    <div class="h-screen w-screen transition duration-500 transform overflow-hidden">
+      <bigPrompt
+        @replay="startGame"
+        class="absolute z-50"
+        :shown="showPrompt"
+        :message="gameEndMsg"
+        :replayPrompt="true"
+      />
       <div
-        class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+        class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0"
+        data-test="singlePlayer"
       >
-        <UserScore :users="users" />
-      </div>
-    </transition>
-    <transition name="fade-down" appear>
-      <div
-        class="w-7/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
-      >
-        <Game
-          @guessedWord="handleGuess"
-          :word="word"
-          :lettersLeft="lettersLeft"
-          :round="round"
-          id="gameContainer"
-          :gameTimeStamp="gameTimeStamp"
-          :lives="this.users[this.playingUser.id]?.lives || null"
-          :guessLock="guessLock"
-        />
-      </div>
-    </transition>
+        <transition name="fade-left" appear>
+          <div
+            class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+          >
+            <UserScore :users="users" />
+          </div>
+        </transition>
+        <transition name="fade-down" appear>
+          <div
+            class="w-7/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+          >
+            <Game
+              @guessedWord="handleGuess"
+              :word="word"
+              :lettersLeft="lettersLeft"
+              :round="round"
+              id="gameContainer"
+              :gameTimeStamp="gameTimeStamp"
+              :lives="this.users[this.playingUser.id]?.lives || null"
+              :guessLock="guessLock"
+            />
+          </div>
+        </transition>
 
-    <transition name="fade-right" appear>
-      <div
-        class="w-3/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
-      >
-        <Chat
-          :users="users"
-          :chatMsgToPush="chatMsgToPush"
-          :playingUser="playingUser"
-          id="chatContainer"
-          :sp="true"
-        />
+        <transition name="fade-right" appear>
+          <div
+            class="w-3/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
+          >
+            <Chat
+              :users="users"
+              :chatMsgToPush="chatMsgToPush"
+              :playingUser="playingUser"
+              id="chatContainer"
+              :sp="true"
+            />
+          </div>
+        </transition>
       </div>
-    </transition>
-  </div>
+    </div>
+  </transition>
 </template>
 
 <script>

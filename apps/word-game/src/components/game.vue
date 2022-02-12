@@ -4,13 +4,27 @@
       <h1 class="text-5xl font-bold italic">Round {{ round }}</h1>
       <h2 class="text-2xl font-normal">{{ lettersLeft }} letters</h2>
     </div>
-    <div class="px-10 py-4 shadow-2xl rounded-2xl flex justify-center items-center">
-      <h1
-        :class="{ 'px-6': letter.ltr == ' ', 'px-1': letter.ltr != ' ' }"
-        class="text-5xl font-bold italic w-14"
-        :key="idx"
-        v-for="(letter, idx) in word"
-      >{{ letter.isGuessed ? letter.ltr : '&#8213;' }}</h1>
+    <div
+      class="px-10 pt-6 pb-4 shadow-2xl rounded-2xl flex justify-center items-center flex-wrap gap-16"
+    >
+      <div
+        class="flex justify-center items-center flex-row"
+        :key="'_WORD_' + wordIdx"
+        v-for="(wordObj, wordIdx) in seperatedWord"
+      >
+        <transition-group name="list-fade-up" appear mode="in-out">
+          <h1
+            :class="{
+              'w-14': !letter.isGuessed,
+              'text-blue-600 w-12': letter.isGuessed,
+            }"
+            class="text-5xl font-bold italic transition duration-300 transform"
+            :key="'_LETTER_' + letter.index"
+            v-for="letter in wordObj"
+          >{{ letter.isGuessed ? letter.ltr : '&#8213;' }}</h1>
+        </transition-group>
+        <br />
+      </div>
     </div>
     <AlreadyGuessed :alreadyGuessed="alreadyGuessed" />
     <svg
@@ -61,6 +75,22 @@ export default {
     return {
       alreadyGuessed: [],
     };
+  },
+  computed: {
+    seperatedWord() {
+      const splitArr = [];
+      let i = 0;
+      this.word.forEach(letter => {
+        if (splitArr[i] == undefined) {
+          splitArr[i] = [];
+        }
+        if (letter.ltr != " ") splitArr[i].push(letter);
+        else {
+          i++;
+        }
+      });
+      return splitArr;
+    }
   },
   methods: {
     handleKeypress(e) {

@@ -1,75 +1,77 @@
 <template>
-  <div class="h-screen w-screen transition duration-300 transform overflow-hidden">
-    <bigPrompt
-      @replay="newGame"
-      class="absolute z-50"
-      :shown="showPrompt"
-      :message="gameEndMsg"
-      :replayPrompt="true"
-    />
-    <loading :show="loading" />
-    <div
-      class="flex p-10 h-screen w-screen justify-center items-center gap-5 relative z-0 bg-gradient-to-br from-sky-400 to-blue-600"
-      data-test="MultiPlayer"
-    >
-      <transition name="fade-left" appear>
-        <div
-          class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col"
-        >
-          <UserScore :users="playingUsers" />
+  <transition name="fade-x" appear>
+    <div class="h-screen w-screen transition duration-500 transform overflow-hidden">
+      <bigPrompt
+        @replay="newGame"
+        class="absolute z-50"
+        :shown="showPrompt"
+        :message="gameEndMsg"
+        :replayPrompt="true"
+      />
+      <loading :show="loading" />
+      <div
+        class="flex xl:p-10 h-screen w-screen justify-center items-center xl:gap-5 relative z-0"
+        data-test="MultiPlayer"
+      >
+        <transition name="fade-left" appear>
           <div
-            :class="{ 'opacity-80': textCopied, 'opacity-100': !textCopied }"
-            class="flex justify-start items-center w-11/12 gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col mb-2 transition duration-500"
+            class="w-2/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col border-l-2 border-gray-500 xl:border-0"
           >
-            <h1 class="w-full">Invite Your Friends With this code</h1>
+            <UserScore :users="playingUsers" />
             <div
-              @keyup.prevent.stop
-              class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg text-sm relative w-full pr-12"
-              tabindex="-1"
+              :class="{ 'opacity-80': textCopied, 'opacity-100': !textCopied }"
+              class="flex justify-start items-center w-11/12 gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col mb-2 transition duration-500"
             >
-              {{ roomId }}
-              <span
-                @click="copyRoomId"
-                :class="{ 'bg-blue-300': textCopied, 'bg-blue-400': !textCopied }"
-                class="px-1 py-0.5 absolute right-1 top-1 bottom-1 h-5 flex justify-center items-center hover:-translate-y-0.5 transform transition duration-300 rounded-md cursor-pointer shadow-lg"
-              >{{ textCopied ? "copied" : "copy" }}</span>
+              <h1 class="w-full">Invite Your Friends With this code</h1>
+              <div
+                @keyup.prevent.stop
+                class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg text-sm relative w-full pr-12"
+                tabindex="-1"
+              >
+                {{ roomId }}
+                <span
+                  @click="copyRoomId"
+                  :class="{ 'bg-blue-300': textCopied, 'bg-blue-400': !textCopied }"
+                  class="px-1 py-0.5 absolute right-1 top-1 bottom-1 h-5 flex justify-center items-center hover:-translate-y-0.5 transform transition duration-300 rounded-md cursor-pointer shadow-lg"
+                >{{ textCopied ? "copied" : "copy" }}</span>
+              </div>
             </div>
           </div>
-        </div>
-      </transition>
-      <transition name="fade-down" appear>
-        <div
-          class="w-7/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
-        >
-          <Game
-            @guessedWord="handleGuess"
-            :word="word"
-            :lettersLeft="lettersLeft"
-            :round="round"
-            id="gameContainer"
-            :gameTimeStamp="gameTimeStamp"
-            :alreadyGuessedPush="alreadyGuessed"
-            :guessLock="guessLock || deadLock || lettersLeft < 1"
-          />
-        </div>
-      </transition>
+        </transition>
+        <transition name="fade-down" appear>
+          <div
+            class="w-7/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 border-l-2 border-gray-500 xl:border-0"
+          >
+            <Game
+              @guessedWord="handleGuess"
+              :word="word"
+              :lettersLeft="lettersLeft"
+              :round="round"
+              id="gameContainer"
+              :gameTimeStamp="gameTimeStamp"
+              :alreadyGuessedPush="alreadyGuessed"
+              :guessLock="guessLock || deadLock || lettersLeft < 1"
+            />
+          </div>
+        </transition>
 
-      <transition name="fade-right" appear>
-        <div
-          class="w-3/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
-        >
-          <Chat
-            :users="users"
-            :chatMsgToPush="chatMsgToPush"
-            :playingUser="playingUser"
-            id="chatContainer"
-            :sp="false"
-            @msgSend="sendMsg"
-          />
-        </div>
-      </transition>
+        <transition name="fade-right" appear>
+          <div
+            class="w-3/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 border-l-2 border-gray-500 xl:border-0"
+          >
+            <Chat
+              :users="users"
+              :chatMsgToPush="chatMsgToPush"
+              :playingUser="playingUser"
+              id="chatContainer"
+              :sp="false"
+              @msgSend="sendMsg"
+            />
+          </div>
+        </transition>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
