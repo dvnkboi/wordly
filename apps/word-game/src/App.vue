@@ -38,6 +38,8 @@ body {
     calc(var(--p) * -1) calc(var(--p) * 0);
   animation: color var(--d) var(--e) infinite,
     position var(--d) var(--e) infinite;
+
+  overflow: hidden;
 }
 
 @keyframes color {
