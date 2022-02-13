@@ -25,9 +25,10 @@ yarn install to install dependencies required by each app/package
 ### Build
 
 To build all apps and packages, run the following command:
+requirements: nodejs version 16 or more, yarn v2/v3
 
 ```
-cd my-turborepo
+cd wordly
 yarn run build
 ```
 
@@ -36,7 +37,7 @@ yarn run build
 To develop all apps and packages, run the following command:
 
 ```
-cd my-turborepo
+cd wordly
 yarn run dev
 ```
 ## Technologies
