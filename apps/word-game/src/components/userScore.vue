@@ -8,7 +8,7 @@
           :key="user[0]"
           v-for="user in users"
           :user="user[1]"
-          :first="this.users[0][0] == user[0]"
+          :first="users[0][0] == user[0]"
         />
       </transition-group>
     </div>

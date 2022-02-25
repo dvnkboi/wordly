@@ -53,8 +53,10 @@ export default {
     user: {
       type: Object,
       default: {
+        id: "0",
         name: 'Cat',
         score: 0,
+        lives: 5,
         img: `https://thecatapi.com/api/images/get?format=src&type=jpg&cache=${Date.now()}`,
       },
     },
@@ -68,6 +70,7 @@ export default {
     },
   },
   mounded() {
+    console.log(this.user);
   }
 }
 </script>

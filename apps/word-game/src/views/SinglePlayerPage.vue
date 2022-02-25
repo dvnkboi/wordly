@@ -16,7 +16,7 @@
           <div
             class="w-2/12 bg-gray-50 shadow-2xl rounded-3xl h-full transform transition duration-1000 delay-300"
           >
-            <UserScore :users="users" />
+            <UserScore :users="playingUsers" />
           </div>
         </transition>
         <transition name="fade-down" appear>
@@ -88,6 +88,7 @@ export default {
         timeStamp: new Date()
       },
       guessLock: false,
+      playingUsers: {}
     }
   },
   methods: {
@@ -131,6 +132,11 @@ export default {
             await this.$lf.setItem('currentRound', this.round);
           }
         }
+
+        this.playingUsers = Object.entries(this.users).filter((e) => e[0] != "0").sort((a, b) => {
+          return b[1].score - a[1].score;
+        });
+
         await this.$lf.setItem('spUser', JSON.stringify(this.users[this.playingUser.id]));
         this.guessLock = false;
       }
@@ -174,14 +180,23 @@ export default {
 
     this.users[this.playingUser.id] = JSON.parse(await this.$lf.getItem('spUser'));
 
+
+
     if (this.users[this.playingUser.id] == null) {
       this.users[this.playingUser.id] = {
-        name: 'You',
+        id: this.playingUser,
+        name: "You",
         lives: 5,
         score: 0,
-        img: 'https://i.pravatar.cc/300?img=5',
+        img: `https://thecatapi.com/api/images/get?format=src&type=jpg&cache=${Date.now()}`,
       }
     }
+
+    this.playingUsers = Object.entries(this.users).filter((e) => e[0] != "0").sort((a, b) => {
+      return b[1].score - a[1].score;
+    });
+
+    console.log(this.users);
 
     //get random word
     this.round = await this.$lf.getItem('currentRound');
