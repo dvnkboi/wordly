@@ -14,7 +14,7 @@ describe('utils', () => {
     const start = Date.now()
     await wait(100)
     const end = Date.now()
-    expect(end - start).toBeGreaterThanOrEqual(100)
+    expect(end - start).toBeGreaterThanOrEqual(99)
   })
 
   it('gets word array from a word', () => {
