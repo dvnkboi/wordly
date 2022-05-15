@@ -1,72 +1,44 @@
 <template>
   <transition name="fade-x" appear>
     <div class="h-screen w-screen transition duration-500 transform overflow-hidden">
-      <bigPrompt
-        @replay="newGame"
-        class="absolute z-50"
-        :shown="showPrompt"
-        :message="gameEndMsg"
-        :replayPrompt="true"
-      />
+      <bigPrompt @replay="newGame" class="absolute z-50" :shown="showPrompt" :message="gameEndMsg"
+        :replayPrompt="true" />
       <loading :show="loading" />
-      <div
-        class="flex xl:p-10 h-screen w-screen justify-center items-center xl:gap-5 relative z-0"
-        data-test="MultiPlayer"
-      >
+      <div class="flex xl:p-10 h-screen w-screen justify-center items-center xl:gap-5 relative z-0"
+        data-test="MultiPlayer">
         <transition name="fade-left" appear>
           <div
-            class="w-2/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col border-l-2 border-gray-500 xl:border-0"
-          >
+            class="w-2/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 flex justify-center items-center flex-col border-l-2 border-gray-500 xl:border-0">
             <UserScore :users="playingUsers" />
-            <div
-              :class="{ 'opacity-80': textCopied, 'opacity-100': !textCopied }"
-              class="flex justify-start items-center w-11/12 gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col mb-2 transition duration-500"
-            >
+            <div :class="{ 'opacity-80': textCopied, 'opacity-100': !textCopied }"
+              class="flex justify-start items-center w-11/12 gap-2 bg-gray-100 shadow-lg rounded-2xl px-4 py-2 flex-col mb-2 transition duration-500">
               <h1 class="w-full">Invite Your Friends With this code</h1>
-              <div
-                @keyup.prevent.stop
+              <div @keyup.prevent.stop
                 class="bg-gray-200 shadow-xl truncate whitespace-nowrap px-1 py-1 rounded-lg text-sm relative w-full pr-12"
-                tabindex="-1"
-              >
+                tabindex="-1">
                 {{ roomId }}
-                <span
-                  @click="copyRoomId"
-                  :class="{ 'bg-blue-300': textCopied, 'bg-blue-400': !textCopied }"
-                  class="px-1 py-0.5 absolute right-1 top-1 bottom-1 h-5 flex justify-center items-center hover:-translate-y-0.5 transform transition duration-300 rounded-md cursor-pointer shadow-lg"
-                >{{ textCopied ? "copied" : "copy" }}</span>
+                <span @click="copyRoomId" :class="{ 'bg-blue-300': textCopied, 'bg-blue-400': !textCopied }"
+                  class="px-1 py-0.5 absolute right-1 top-1 bottom-1 h-5 flex justify-center items-center hover:-translate-y-0.5 transform transition duration-300 rounded-md cursor-pointer shadow-lg">{{
+                      textCopied ? "copied" : "copy"
+                  }}</span>
               </div>
             </div>
           </div>
         </transition>
         <transition name="fade-down" appear>
           <div
-            class="w-7/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 border-l-2 border-gray-500 xl:border-0"
-          >
-            <Game
-              @guessedWord="handleGuess"
-              :word="word"
-              :lettersLeft="lettersLeft"
-              :round="round"
-              id="gameContainer"
-              :gameTimeStamp="gameTimeStamp"
-              :alreadyGuessedPush="alreadyGuessed"
-              :guessLock="guessLock || deadLock || lettersLeft < 1"
-            />
+            class="w-7/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 border-l-2 border-gray-500 xl:border-0">
+            <Game @guessedWord="handleGuess" :word="word" :lettersLeft="lettersLeft" :round="round" id="gameContainer"
+              :gameTimeStamp="gameTimeStamp" :alreadyGuessedPush="alreadyGuessed"
+              :guessLock="guessLock || deadLock || lettersLeft < 1" />
           </div>
         </transition>
 
         <transition name="fade-right" appear>
           <div
-            class="w-3/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 border-l-2 border-gray-500 xl:border-0"
-          >
-            <Chat
-              :users="users"
-              :chatMsgToPush="chatMsgToPush"
-              :playingUser="playingUser"
-              id="chatContainer"
-              :sp="false"
-              @msgSend="sendMsg"
-            />
+            class="w-3/12 bg-gray-50 xl:shadow-2xl xl:rounded-3xl h-full transform transition duration-1000 delay-300 border-l-2 border-gray-500 xl:border-0">
+            <Chat :users="users" :chatMsgToPush="chatMsgToPush" :playingUser="playingUser" id="chatContainer"
+              :sp="false" @msgSend="sendMsg" />
           </div>
         </transition>
       </div>
@@ -75,8 +47,8 @@
 </template>
 
 <script>
-import Chat from '../components/chat.vue'
-import Game from '../components/game.vue'
+import Chat from '../components/chat.vue';
+import Game from '../components/game.vue';
 import UserScore from '../components/userScore.vue';
 import BigPrompt from '../components/bigPrompt.vue';
 import { wait } from 'shared';
@@ -110,7 +82,7 @@ export default {
       nextRoomId: "lobby",
       loading: true,
       newGameInit: false,
-    }
+    };
   },
   methods: {
     async handleGuess(letter, correct) {
@@ -133,7 +105,7 @@ export default {
         userId: 0,
         message: msg,
         timeStamp: new Date()
-      }
+      };
     },
     async connectSocket() {
 
@@ -143,8 +115,8 @@ export default {
 
       this.loading = true;
       this.socket = io.connect(`${import.meta.env.VITE_HOST}`, {
-        transports: ['websocket'],
-        upgrade: true,
+        transports: ['polling'],
+        upgrade: false,
         rejectUnauthorized: false,
         secure: true,
       },
@@ -163,7 +135,7 @@ export default {
           lives: 10,
           score: 0,
           img: `https://thecatapi.com/api/images/get?format=src&type=jpg&cache=${Date.now()}`,
-        }
+        };
 
         console.log('connected');
 
@@ -183,14 +155,14 @@ export default {
         this.readState(state);
         if (this.users[this.playingUser].lives <= 0) this.deadLock = true;
         else this.deadLock = false;
-      })
+      });
 
       this.socket.on('chatMsg', (msg) => {
 
         this.chatMsgToPush = {
           ...msg,
           timeStamp: new Date()
-        }
+        };
       });
 
       this.socket.on('startGame', (users, state) => {
@@ -286,10 +258,10 @@ export default {
     window.addEventListener('beforeunload', () => {
       // this.socket.emit('leave');
       this.socket.close();
-    })
+    });
   },
   async mounted() {
-    console.log("mounted")
+    console.log("mounted");
     this.connectSocket();
   },
   beforeUnmount() {
@@ -303,5 +275,5 @@ export default {
     BigPrompt,
     Loading
   },
-}
+};
 </script>
